@@ -1,0 +1,50 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security" xmlns:beans="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+
+
+   <!-- Enable annotated method level security -->
+   <global-method-security secured-annotations="enabled">
+   </global-method-security>
+   
+
+   <http use-expressions="true">
+      <!-- Have security ignore all access to static resources -->
+      <intercept-url pattern="/images/**" filters="none" />
+
+      <!-- Allow anyone access to homepage -->
+      <intercept-url pattern="/" access="permitAll" />
+
+      <!-- Must be authenticated to go any deeper than homepage -->
+      <intercept-url pattern="/**" access="isAuthenticated()" />
+
+      <!-- Display Spring default form login page whenever unauthenticated user accesses url requiring 
+         it, login page submit goes to /j_spring_security_check with user/password entered -->
+      <form-login />
+
+      <!-- When user logout is desired send a get to /j_spring_security_logout and Spring will clear 
+         out credentials from session So new login will be required -->
+      <logout />
+
+      <!-- Require user role to access any url to BaristamaticController -->
+      <!-- <intercept-url pattern="/barista*" access="ROLE_USER" /> -->
+
+      <!-- Require admin role to access any url to BaristamaticController>>inventory method -->
+      <intercept-url pattern="/inventory*" access="ROLE_ADMIN" />
+
+   </http>
+
+   <authentication-manager>
+      <authentication-provider>
+         <user-service>
+            <user name="admin" password="admin" authorities="ROLE_ADMIN" />
+            <user name="user1" password="user1" authorities="ROLE_USER" />
+         </user-service>
+      </authentication-provider>
+   </authentication-manager>
+
+
+</beans:beans>
